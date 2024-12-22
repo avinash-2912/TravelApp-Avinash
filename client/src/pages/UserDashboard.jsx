@@ -7,6 +7,8 @@ export function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log(bookings)
+
   useEffect(() => {
     const fetchBookings = async () => {
       try {

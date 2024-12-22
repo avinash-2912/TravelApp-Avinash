@@ -8,14 +8,15 @@ export function TripDetail() {
   const [trip, setTrip] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [bookingCount, setBookingCount] = useState(1);
-  const [currentUser, setCurrentUser] = useState(null); 
+  const [role, setRole] = useState(null);
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem('currentUser');
-    if (userData) {
-      setCurrentUser(JSON.parse(userData)); 
-    }
+    const storedRole = localStorage.getItem('role');
+    const storedUserId = localStorage.getItem('userId');
+    if (storedRole) setRole(storedRole);
+    if (storedUserId) setUserId(storedUserId);
   }, []);
 
   useEffect(() => {
@@ -34,13 +35,13 @@ export function TripDetail() {
   }, [id]);
 
   const handleEdit = () => {
-    navigate(`/trips/edit/${id}`); 
+    navigate(`/trips/edit/${id}`);
   };
 
   const handleDelete = async () => {
     try {
       await api.delete(`/trips/${id}`);
-      navigate('/dashboard'); 
+      navigate('/dashboard');
     } catch (error) {
       console.error('Failed to delete trip:', error);
     }
@@ -53,8 +54,7 @@ export function TripDetail() {
     }
     try {
       await api.post('/bookings', { tripId: id, count: bookingCount });
-      // Navigate to the user's dashboard after booking
-      navigate('/dashboard'); 
+      navigate('/dashboard');
     } catch (error) {
       console.error('Failed to book trip:', error);
     }
@@ -63,6 +63,8 @@ export function TripDetail() {
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
   }
+
+  const isOrganizer = role === 'organizer' && userId === trip.organizerId;
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 to-white rounded-lg shadow-lg">
@@ -81,7 +83,7 @@ export function TripDetail() {
         <p className="mt-2 text-lg font-semibold">Price: <span className="text-green-500">${trip.price}</span></p>
         <p className="text-gray-600">Available spots: <span className="font-bold">{trip.capacity}</span></p>
       </div>
-      {currentUser && currentUser.id === trip.organizerId ? (
+      {isOrganizer ? (
         <div className="mt-6 flex space-x-4">
           <button onClick={handleEdit} className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition duration-300">
             <Edit size={16} /> Edit Trip
@@ -91,23 +93,25 @@ export function TripDetail() {
           </button>
         </div>
       ) : (
-        <div className="mt-6">
-          <label htmlFor="bookingCount" className="block mb-2 text-gray-700 font-semibold">Number of Persons:</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              id="bookingCount"
-              value={bookingCount}
-              min="1"
-              max={trip.capacity}
-              onChange={(e) => setBookingCount(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-1/4"
-            />
-            <button onClick={handleBooking} className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700 transition duration-300">
-              Book Trip
-            </button>
+        role === 'user' && (
+          <div className="mt-6">
+            <label htmlFor="bookingCount" className="block mb-2 text-gray-700 font-semibold">Number of Persons:</label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                id="bookingCount"
+                value={bookingCount}
+                min="1"
+                max={trip.capacity}
+                onChange={(e) => setBookingCount(e.target.value)}
+                className="border border-gray-300 rounded-md p-2 w-1/4"
+              />
+              <button onClick={handleBooking} className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700 transition duration-300">
+                Book Trip
+              </button>
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );
