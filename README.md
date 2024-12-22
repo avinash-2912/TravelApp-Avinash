@@ -144,7 +144,30 @@ a. The frontend will be available at `http://localhost:5173` by default.
 
 - **GET /bookings** (User only)
   - Fetches all bookings made by the user.
+ 
+#### Authentication
 
+- **POST /signup**
+  - Registers a new user or organizer.
+  - **Request Body**:
+    ```json
+    {
+      "username": "Avinash",
+      "email": "avi123@gmail.com",
+      "password": "password123",
+      "role": "user" // or "organizer"
+    }
+    ```
+
+- **POST /login**
+  - Authenticates a user or organizer and returns a token.
+  - **Request Body**:
+    ```json
+    {
+      "email": "avi123@gmail.com",
+      "password": "123456"
+    }
+    ```
 ---
 
 ## Approach and Assumptions
