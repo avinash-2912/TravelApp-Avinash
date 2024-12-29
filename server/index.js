@@ -15,7 +15,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Adjust based on your frontend URL
+  origin: 'https://travel-app-avinash-ioiz-jcudj3z7q-avinashs-projects-e5cad73c.vercel.app/', // Adjust based on your frontend URL
   credentials: true,
 }));
 app.use(express.json());
